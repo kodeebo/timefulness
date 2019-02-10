@@ -5,14 +5,14 @@ import 'utils.dart';
 
 class MeditationRoute extends StatefulWidget {
   MeditationRoute({Key key, this.startTime}) : super(key: key);
-  final double startTime;
+  final int startTime;
 
   @override
   MeditationPageState createState() => MeditationPageState();
 }
 
 class MeditationPageState extends State<MeditationRoute> {
-  double startTime;
+  int startTime;
   int time;
   var color = Color(0xFFFFFFEE);
   @override
@@ -55,7 +55,7 @@ class MeditationPageState extends State<MeditationRoute> {
     String timeString = secondsToTimer(time);
     return Scaffold(
       body: AnimatedContainer(
-        duration: Duration(seconds: startTime.round()),
+        duration: Duration(seconds: startTime),
         constraints: BoxConstraints.expand(),
         decoration: BoxDecoration(
           gradient: LinearGradient(

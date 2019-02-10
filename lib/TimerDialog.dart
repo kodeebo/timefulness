@@ -1,20 +1,40 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_fluid_slider/flutter_fluid_slider.dart';
 
-class TimerDialog extends StatelessWidget {
-  TimerDialog({Key key, this.time, this.setTime}) : super(key: key);
-  final double time;
-  final setTime;
+class TimerDialog extends StatefulWidget {
+  TimerDialog({this.currentTime, this.setTimer}) : super();
+  final int currentTime;
+  final setTimer;
+
+  @override
+  TimerState createState() => TimerState();
+}
+
+class TimerState extends State<TimerDialog> {
+  int time;
+
+  @override
+  void initState() {
+    super.initState();
+    time = widget.currentTime;
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Container(
-      constraints: BoxConstraints.expand(),
-      child: FluidSlider(
-        value: time,
-        onChanged: setTime,
+    return Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+      Text('Choose number of minutes'),
+      FluidSlider(
+        value: time.toDouble(),
+        onChanged: (double newTime) => setState(() {
+              time = newTime.round();
+            }),
         min: 0.0,
         max: 60.0,
       ),
-    );
+      RaisedButton(
+        onPressed: () => widget.setTimer(time),
+        child: Text('Lagre'),
+      )
+    ]);
   }
 }

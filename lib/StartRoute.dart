@@ -1,21 +1,27 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart' show timeDilation;
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 import 'PhotoHero.dart';
 import 'MeditationRoute.dart';
-import 'package:flutter/scheduler.dart' show timeDilation;
 import 'TimerDialog.dart';
 
 class StartRoute extends StatefulWidget {
-  StartRoute({Key key}) : super(key: key);
+  StartRoute({Key key, this.firestore, this.document}) : super(key: key);
+  final DocumentSnapshot document;
+  final Firestore firestore;
 
   @override
   StartState createState() => StartState();
 }
 
 class StartState extends State<StartRoute> {
-  num time = 60.0;
   @override
   Widget build(BuildContext context) {
     timeDilation = 2.0;
+    int time = widget.document['timerMinutes'];
+    DocumentReference doc =
+        Firestore.instance.collection('torgeha').document('settings');
     return Container(
       constraints: BoxConstraints.expand(),
       decoration: BoxDecoration(
@@ -43,29 +49,28 @@ class StartState extends State<StartRoute> {
             width: 100.0,
             onTap: () => Navigator.of(context).push(MaterialPageRoute<void>(
                 builder: (BuildContext context) =>
-                    MeditationRoute(startTime: time))),
+                    MeditationRoute(startTime: time * 60))),
           ),
           Spacer(),
           Row(children: [
             IconButton(
-              icon: Icon(Icons.timer),
-              onPressed: () => Navigator.of(context).push(
-                    MaterialPageRoute<void>(
-                        builder: (BuildContext context) => TimerDialog(
-                            time: time,
-                            setTime: (double newTime) => setState(() {
-                                  time = newTime;
-                                }))),
-                  ),
-            ),
-            Spacer(),
-            IconButton(
-                icon: Icon(Icons.surround_sound),
+                icon: Icon(Icons.timer),
                 onPressed: () => showModalBottomSheet<void>(
                     context: context,
                     builder: (BuildContext context) {
-                      return Container();
+                      return TimerDialog(
+                        currentTime: time,
+                        setTimer: (int time) {
+                          doc.updateData({'timerMinutes': time});
+                          Navigator.pop(context);
+                        },
+                      );
                     })),
+            Spacer(),
+            IconButton(
+              icon: Icon(Icons.surround_sound),
+              onPressed: () {},
+            ),
           ])
         ],
       ),
